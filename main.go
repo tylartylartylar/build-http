@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -16,15 +17,29 @@ func main() {
 
 	data := make([]byte, 8)
 	currentLine := ""
+	reader := bufio.NewReader(file)
+
 	for {
-		_, err := file.Read(data)
+		n, err := reader.Read(data)
 		if err != nil {
 			if err.Error() != "EOF" {
 				fmt.Println("Error reading file:", err)
 			}
 			break
 		}
-		fmt.Printf("read: %s\n", data)
+
+		parts := string(data[:n])
+		for _, part := range parts {
+			if part == '\n' {
+				fmt.Printf("read: %s\n", currentLine)
+				currentLine = ""
+			} else {
+				currentLine += string(part)
+			}
+		}
 	}
 
+	if currentLine != "" {
+		fmt.Printf("read: %s\n", currentLine)
+	}
 }
